@@ -1,5 +1,13 @@
+import * as vscode from 'vscode';
+
+function getIndentStr(): string {
+    const config = vscode.workspace.getConfiguration('phpSerializeInspector');
+    const size = config.get<number>('indentSize', 4);
+    return ' '.repeat(size);
+}
+
 function indent(level: number): string {
-    return '    '.repeat(level);
+    return getIndentStr().repeat(level);
 }
 
 function safeString(str: string): string {

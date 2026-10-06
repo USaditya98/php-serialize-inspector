@@ -9,8 +9,17 @@ export async function unserializeCommand() {
         return;
     }
 
-    const selection = editor.selection;
-    const text = editor.document.getText(selection).trim();
+    let selection = editor.selection;
+    let text = editor.document.getText(selection).trim();
+
+    // If no text is selected, fallback to the entire document (useful for CodeLens)
+    if (!text) {
+        text = editor.document.getText().trim();
+        selection = new vscode.Selection(
+            editor.document.positionAt(0),
+            editor.document.positionAt(editor.document.getText().length)
+        );
+    }
 
     if (!text) {
         vscode.window.showErrorMessage('Please select data first.');
@@ -19,7 +28,6 @@ export async function unserializeCommand() {
 
     let parsed: any;
     try {
-        // Auto Format Detection: JSON or PHP Serialize
         if ((text.startsWith('{') && text.endsWith('}')) || (text.startsWith('[') && text.endsWith(']'))) {
             try {
                 parsed = JSON.parse(text);
@@ -35,6 +43,9 @@ export async function unserializeCommand() {
         return;
     }
 
+    const config = vscode.workspace.getConfiguration('phpSerializeInspector');
+    const defaultFormat = config.get<string>('defaultFormat', 'Ask (Dropdown)');
+
     const formatOptions = [
         { label: 'JSON (Formatted)', description: 'Standard formatted JSON' },
         { label: 'JSON (Minified)', description: 'Compact JSON' },
@@ -48,13 +59,8 @@ export async function unserializeCommand() {
         { label: 'Raw Value', description: "Direct scalar value" }
     ];
 
-    const quickPick = vscode.window.createQuickPick();
-    quickPick.items = formatOptions;
-    quickPick.placeholder = 'Select format. (Arrow keys to preview, Enter to apply & copy, Esc to cancel)';
-    
     let currentStart = selection.start;
     let currentEnd = selection.end;
-    let isAccepted = false;
     let isUpdating = false;
 
     function generateOutput(formatLabel: string): { outputStr: string, lang: string } {
@@ -63,7 +69,7 @@ export async function unserializeCommand() {
         
         switch (formatLabel) {
             case 'JSON (Formatted)':
-                outputStr = JSON.stringify(parsed, null, 4);
+                outputStr = JSON.stringify(parsed, null, config.get<number>('indentSize', 4));
                 lang = 'json';
                 break;
             case 'JSON (Minified)':
@@ -125,6 +131,18 @@ export async function unserializeCommand() {
         isUpdating = false;
     }
 
+    if (defaultFormat !== 'Ask (Dropdown)') {
+        const { outputStr, lang } = generateOutput(defaultFormat);
+        await applyText(outputStr, lang);
+        return;
+    }
+
+    const quickPick = vscode.window.createQuickPick();
+    quickPick.items = formatOptions;
+    quickPick.placeholder = 'Select format. (Arrow keys to preview, Enter to apply & copy, Esc to cancel)';
+    
+    let isAccepted = false;
+
     quickPick.onDidChangeActive(async (activeItems) => {
         if (activeItems.length > 0) {
             const { outputStr, lang } = generateOutput(activeItems[0].label);
@@ -147,7 +165,6 @@ export async function unserializeCommand() {
 
     quickPick.onDidHide(async () => {
         if (!isAccepted) {
-            // Revert back to original text if user hits Escape
             await applyText(text, 'plaintext');
         }
         quickPick.dispose();

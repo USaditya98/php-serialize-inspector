@@ -2,7 +2,7 @@
   "name": "php-serialize-inspector",
   "displayName": "PHP Serialize Inspector",
   "description": "Safely serialize and unserialize PHP serialized data in VS Code",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "publisher": "USaditya98",
   "repository": {
     "type": "git",
@@ -14,15 +14,60 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "*"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "php-serialize-inspector.unserialize",
         "title": "PHP: Unserialize"
+      },
+      {
+        "command": "php-serialize-inspector.serialize",
+        "title": "PHP: Serialize (JSON to PHP)"
       }
-    ]
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "php-serialize-inspector.unserialize",
+          "group": "modification"
+        },
+        {
+          "command": "php-serialize-inspector.serialize",
+          "group": "modification"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "PHP Serialize Inspector",
+      "properties": {
+        "phpSerializeInspector.defaultFormat": {
+          "type": "string",
+          "enum": [
+            "Ask (Dropdown)",
+            "JSON (Formatted)",
+            "JSON (Minified)",
+            "PHP Array",
+            "PHP var_export()",
+            "JavaScript Object",
+            "TypeScript",
+            "YAML",
+            "XML",
+            "Pretty Tree"
+          ],
+          "default": "Ask (Dropdown)",
+          "description": "The default format to convert PHP serialized strings into."
+        },
+        "phpSerializeInspector.indentSize": {
+          "type": "number",
+          "default": 4,
+          "description": "Number of spaces to use for indentation in formatted outputs."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
