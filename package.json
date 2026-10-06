@@ -1,0 +1,41 @@
+{
+  "name": "php-serialize-inspector",
+  "displayName": "PHP Serialize Inspector",
+  "description": "Safely serialize and unserialize PHP serialized data in VS Code",
+  "version": "0.0.6",
+  "publisher": "USaditya98",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/USaditya98/php-serialize-inspector"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "php-serialize-inspector.unserialize",
+        "title": "PHP: Unserialize"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^18.x",
+    "@types/vscode": "^1.80.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.0.0"
+  }
+}
