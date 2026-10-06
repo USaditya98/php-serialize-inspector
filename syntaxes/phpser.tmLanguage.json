@@ -1,0 +1,39 @@
+{
+  "name": "PHP Serialized",
+  "scopeName": "source.phpser",
+  "patterns": [
+    {
+      "match": "^(a|O|C):(\\d+):",
+      "captures": {
+        "1": { "name": "keyword.other.phpser" },
+        "2": { "name": "constant.numeric.phpser" }
+      }
+    },
+    {
+      "match": "(s):(\\d+):\"(.*?)\";",
+      "captures": {
+        "1": { "name": "keyword.other.phpser" },
+        "2": { "name": "constant.numeric.phpser" },
+        "3": { "name": "string.quoted.double.phpser" }
+      }
+    },
+    {
+      "match": "(i|d):([0-9.\\-]+);",
+      "captures": {
+        "1": { "name": "keyword.other.phpser" },
+        "2": { "name": "constant.numeric.phpser" }
+      }
+    },
+    {
+      "match": "(b):([01]);",
+      "captures": {
+        "1": { "name": "keyword.other.phpser" },
+        "2": { "name": "constant.language.boolean.phpser" }
+      }
+    },
+    {
+      "match": "(N);",
+      "name": "constant.language.null.phpser"
+    }
+  ]
+}

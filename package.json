@@ -2,7 +2,7 @@
   "name": "php-serialize-inspector",
   "displayName": "PHP Serialize Inspector",
   "description": "Safely serialize and unserialize PHP serialized data in VS Code",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "publisher": "USaditya98",
   "repository": {
     "type": "git",
@@ -27,6 +27,14 @@
       {
         "command": "php-serialize-inspector.serialize",
         "title": "PHP: Serialize (JSON to PHP)"
+      },
+      {
+        "command": "php-serialize-inspector.compare",
+        "title": "PHP: Compare Serialized Strings (Diff)"
+      },
+      {
+        "command": "php-serialize-inspector.extract",
+        "title": "PHP: Extract Key from Payload"
       }
     ],
     "menus": {
@@ -38,9 +46,48 @@
         {
           "command": "php-serialize-inspector.serialize",
           "group": "modification"
+        },
+        {
+          "command": "php-serialize-inspector.compare",
+          "group": "modification"
+        },
+        {
+          "command": "php-serialize-inspector.extract",
+          "group": "modification"
         }
       ]
     },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "php-serialize-inspector",
+          "title": "PHP Serialize",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "php-serialize-inspector": [
+        {
+          "id": "php-serialize-explorer",
+          "name": "Payload Explorer"
+        }
+      ]
+    },
+    "languages": [
+      {
+        "id": "phpser",
+        "aliases": ["PHP Serialized"],
+        "extensions": [".phpser"]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "phpser",
+        "scopeName": "source.phpser",
+        "path": "./syntaxes/phpser.tmLanguage.json"
+      }
+    ],
     "configuration": {
       "title": "PHP Serialize Inspector",
       "properties": {

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { unserialize } from '../parser/phpUnserializer';
 import { formatPhpArray, formatPhpVarExport, formatJs, formatYaml, formatXml, formatPrettyTree } from '../formatters/index';
+import { treeProvider } from '../extension';
 
 export async function unserializeCommand() {
     const editor = vscode.window.activeTextEditor;
@@ -27,20 +28,40 @@ export async function unserializeCommand() {
     }
 
     let parsed: any;
+    let textToParse = text;
+    let isBase64 = false;
+
+    // Base64 Auto-Detection (Very common in Laravel/WP)
+    if (/^[A-Za-z0-9+/=\s]+$/.test(text) && text.length > 10) {
+        try {
+            const decoded = Buffer.from(text, 'base64').toString('utf8');
+            if (decoded.startsWith('a:') || decoded.startsWith('O:') || decoded.startsWith('s:') || decoded.startsWith('i:') || decoded.startsWith('b:') || decoded.startsWith('N;')) {
+                textToParse = decoded;
+                isBase64 = true;
+            }
+        } catch (e) {}
+    }
+
     try {
-        if ((text.startsWith('{') && text.endsWith('}')) || (text.startsWith('[') && text.endsWith(']'))) {
+        if ((textToParse.startsWith('{') && textToParse.endsWith('}')) || (textToParse.startsWith('[') && textToParse.endsWith(']'))) {
             try {
-                parsed = JSON.parse(text);
+                parsed = JSON.parse(textToParse);
             } catch (e) {
-                parsed = unserialize(text);
+                parsed = unserialize(textToParse);
             }
         } else {
-            parsed = unserialize(text);
+            parsed = unserialize(textToParse);
         }
     } catch (error: any) {
         const errorMessage = error.message ? error.message : String(error);
         vscode.window.showErrorMessage(`Parse Error: ${errorMessage}`);
         return;
+    }
+
+    // Populate Sidebar TreeView!
+    treeProvider.setData(parsed);
+    if (isBase64) {
+        vscode.window.showInformationMessage('Base64 string auto-decoded and parsed successfully!');
     }
 
     const config = vscode.workspace.getConfiguration('phpSerializeInspector');
