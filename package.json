@@ -2,7 +2,7 @@
   "name": "php-serialize-inspector",
   "displayName": "PHP Serialize Inspector",
   "description": "Safely serialize and unserialize PHP serialized data in VS Code",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "publisher": "USaditya98",
   "repository": {
     "type": "git",
